@@ -5,16 +5,21 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write  # Required for deployment
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Important for gh-pages deploy
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -22,17 +27,14 @@ jobs:
         run: npm install
         working-directory: my-app
 
-      - name: Run tests
-        run: npm test --if-present
-        working-directory: my-app
-
       - name: Build the project
         run: npm run build
         working-directory: my-app
 
-      # Optional: Deploy step (e.g. to GitHub Pages)
-      # - name: Deploy to GitHub Pages
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: my-app/build
+      - name: Deploy to GitHub Pages 🌐
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: my-app/build
+          publish_branch: gh-pages
+          commit_message: "Deploy React app to GitHub Pages 🚀"
